@@ -8,7 +8,7 @@ git clone --depth=1 https://github.com/nbprg/nodepay-referral
 cd nodepay-referral
 ```
 ```
-pip install -r requirements.text
+pip install -r requirements.txt
 ```
 ⚠️ Open Via Browser And Run Captcha Solver for get captcha token
 ```
