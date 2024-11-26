@@ -1,6 +1,26 @@
 ### ⚙️&nbsp; Instaction
 <img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-2.svg"> 
 
+```
+git clone --depth=1 https://github.com/nbprg/nodepay-referral
+```
+```
+cd nodepay-referral
+```
+```
+pip install -r requirements.text
+```
+⚠️ Open Via Browser And Run Captcha Solver for get captcha token
+```
+python app.py
+```
+✨ Open New Tab & Run The app
+```
+python script.py
+```
+🌟 Full Tutorial In YouTube Channel : <a href="https://m.youtube.com/@nbprg">Click Here</a>
+
+
 <h3>Developer Info </h3>
 ✉️ Contact With Me  : <a href="https://t.me/@TataCuto">@TataCuto</a> <br>
 🔊 Telegram Channel : <a href="https://t.me/@cryp2xyz">@cryp2xyz</a> <br>
