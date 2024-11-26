@@ -2,8 +2,8 @@
 <img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-2.svg"> 
 
 <h3>Developer Info </h3>
-✉️ Contact With Me  : <a href="t.me/@TataCuto">@TataCuto</a> <br>
-🔊 Telegram Channel : <a href="t.me/@cryp2xyz">@cryp2xyz</a> <br>
+✉️ Contact With Me  : <a href="https://t.me/@TataCuto">@TataCuto</a> <br>
+🔊 Telegram Channel : <a href="https://t.me/@cryp2xyz">@cryp2xyz</a> <br>
 🎯 YouTube Channel  : <a href="https://m.youtube.com/@nbprg">Noob Programmer</a> <br>
 
 ### ⚙️&nbsp; Captcha Solver JavaScript / use via 
