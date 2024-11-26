@@ -15,6 +15,7 @@ logo = f"""
  \033[1;35m        Developer : Saifur Rahman Siam
          YouTube   : Noob Programmer
          GitHub    : github.com/nbprg
+         Telegram  : @TataCuto
 \033[0m================================================"""
 proxy_list = open('proxy.txt','r').read().splitlines()
 # get Captcha token 
@@ -72,7 +73,7 @@ def reg_accaunt(email, password, username, ref_code, proxy_url=None, captcha_tok
        response.raise_for_status()
        return response.json()
    except Exception as e:
-       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');time.sleep(1)
+       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');linex();time.sleep(1)
 # login account and age authorization token
 def login_acccaunts(email, password, captcha_token,proxy_url):
    try:
@@ -89,7 +90,7 @@ def login_acccaunts(email, password, captcha_token,proxy_url):
        response.raise_for_status()
        return response.json()
    except Exception as e:
-       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');time.sleep(1)
+       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');linex();time.sleep(1)
 # active account and confirmation 
 def active_recent_accaunt(auth_token,proxy_url):
    try:
@@ -105,7 +106,7 @@ def active_recent_accaunt(auth_token,proxy_url):
            response = requests.post(url, headers=headers,json=json_data,proxies=proxy_url,timeout=5)
        return response.json()
    except Exception as e:
-       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');time.sleep(1)
+       print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');linex();time.sleep(1)
 
 # main def for possess full action
 def main():
@@ -142,16 +143,16 @@ def main():
                          open('accaunts.txt','a').write(f"{str(email)}|{str(password)}|{str(auth_token)}\n");time.sleep(1)
                     else:
                         print(f'\r\r\033[1;31m🌲 Referral Error, Not Success \033[0m {response_data["msg"]}');time.sleep(1)
-                        clear_screen()
+                        linex()
                 else:
                     print(f'\r\r\033[1;31m🌲 Account Login Failed \033[0m {response_data["msg"]}');time.sleep(1)
-                    clear_screen()
+                    linex()
             else:
                 print(f'\r\r\033[1;31m🌲 Account Create Failed \033[0m {response_data["msg"]}');time.sleep(1)
-                clear_screen()
-            clear_screen()
+                linex()
+            linex()
         except Exception as e:
-            print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');time.sleep(1)
+            print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m');linex();time.sleep(1)
     print('\r\r\033[0m>>\033[1;32m Your Referral Completed \033[0m')
     exit()
 main()
