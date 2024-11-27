@@ -1,6 +1,4 @@
 import os, sys, random, string, time
-try: import requests
-except: os.system('pip install requests')
 import requests
 
 # Line Function 
@@ -8,7 +6,7 @@ def linex():
     print('\033[0m================================================')
 
 # Logo For script 
-logo = f"""
+logo = """
 \x1b[38;5;46m     ▗▖  ▗▖ ▗▄▖ ▗▄▄▄  ▗▄▄▄▖▗▄▄▖  ▗▄▖▗▖  ▗▖
 \x1b[38;5;47m     ▐▛▚▖▐▌▐▌ ▐▌▐▌  █ ▐▌   ▐▌ ▐▌▐▌ ▐▌▝▚▞▘
 \x1b[38;5;48m     ▐▌ ▝▜▌▐▌ ▐▌▐▌  █ ▐▛▀▀▘▐▛▀▘ ▐▛▀▜▌ ▐▌
@@ -46,14 +44,14 @@ def clear_screen():
     else:
         os.system('clear'); print(logo)
 
-# Get IP using proxy
-def get_ip(proxy_url):
-    proxy = {'http': proxy_url, 'https': proxy_url}
+# Validate proxy by checking connection to a known endpoint
+def validate_proxy(proxy_url):
     try:
-        response = requests.get('http://ip-api.com/json', proxies=proxy)
-        return response.json()['query']
+        proxy = {'http': proxy_url, 'https': proxy_url}
+        response = requests.get('http://ip-api.com/json', proxies=proxy, timeout=5)
+        return response.json()['query']  # Return IP address if proxy works
     except:
-        return None
+        return None  # Return None if proxy is invalid
 
 # Get headers set with `auth_token` or head only
 def get_headers(auth_token=None):
@@ -137,31 +135,26 @@ def main():
             password = str(''.join(random.choice(string.ascii_letters) for _ in range(6)) + 'R@' + ''.join(random.choice(string.digits) for _ in range(3)))
             email = f"{username}{str(random.choice(domains))}"
             proxy_url = random.choice(proxy_list)  # Randomly pick a proxy from the scraped list
-            captcha_token = get_token()
-            response_data = reg_account(email, password, username, ref_code, proxy_url, captcha_token)
-            if response_data['msg'] == 'Success':
-                print(f'\r\r\033[0m>>\033[1;32m Account Created Successfully \033[0m')
+            if validate_proxy(proxy_url):  # Validate the proxy before using it
                 captcha_token = get_token()
-                response_data = login_account(email, password, captcha_token, proxy_url)
-                if response_data['msg'] == 'Success':
-                    print(f'\r\r\033[0m>>\033[1;32m Account Login Successful \033[0m')
-                    auth_token = response_data['data']['token']
-                    # Active account logic
-                    success_crt += 1
-                    open('accounts.txt', 'a').write(f"{str(email)}|{str(password)}|{str(auth_token)}\n")
-                    time.sleep(1)
-                else:
-                    print(f'\r\r\033[1;31m🌲 Account Login Failed \033[0m {response_data["msg"]}')
-                    linex()
+                response_data = reg_account(email, password, username, ref_code, proxy_url, captcha_token)
+                if response_data and 'msg' in response_data and response_data['msg'] == 'Success':
+                    print(f'\r\r\033[0m>>\033[1;32m Account Created Successfully \033[0m')
+                    captcha_token = get_token()
+                    response_data = login_account(email, password, captcha_token, proxy_url)
+                    if response_data and 'msg' in response_data and response_data['msg'] == 'Success':
+                        print(f'\r\r\033[0m>>\033[1;32m Account Login Successful \033[0m')
+                        auth_token = response_data['data']['token']
+                        # Active account logic
+                        success_crt += 1
+                        open('accounts.txt', 'a').write(f"{str(email)}|{str(password)}|{str(auth_token)}\n")
+                        time.sleep(1)
+                    else:
+                        print(f'\r\r\033[1;31m🌲 Account Login Failed \033[0m {response_data.get("msg", "Unknown error")}')
             else:
-                print(f'\r\r\033[1;31m🌲 Account Creation Failed \033[0m {response_data["msg"]}')
-                linex()
+                print(f"⚠️ Invalid Proxy: {proxy_url}")
         except Exception as e:
             print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m')
             linex()
             time.sleep(1)
-
-    print('\r\r\033[0m>>\033[1;32m Your Referral Process Completed \033[0m')
-    exit()
-
-main()
+    print(f"Completed {success_crt}/{reff_limit} successful accounts created.")
