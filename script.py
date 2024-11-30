@@ -1,9 +1,9 @@
 import os, sys, random, string, time
-try:import requests
-except:os.system('pip install requests')
+try: import requests
+except: os.system('pip install requests')
 import requests
 
-# Line Function 
+# Line Function
 def linex():
     print('\033[0m================================================')
 
@@ -20,37 +20,45 @@ logo = f"""
          Telegram  : @TataCuto
 \033[0m================================================"""
 
-# Generate Proxy Function
-def generate_proxy():
-    try:
-        response = requests.get("https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=all")
-        proxies = response.text.strip().split("\n")
-        if proxies:
-            return random.choice(proxies)
-        else:
-            raise Exception("No proxies available.")
-    except Exception as e:
-        print(f'\033[31m⚠️ Proxy generation failed: {e} \033[0m')
+# Check if proxy.txt exists and has proxies
+def load_proxies():
+    if os.path.exists('proxy.txt') and os.path.getsize('proxy.txt') > 0:
+        with open('proxy.txt', 'r') as f:
+            return f.read().splitlines()
+    else:
+        print("\033[1;31mNo proxies found. The script will run without proxies.\033[0m")
         return None
 
-# Get Captcha token 
+proxy_list = load_proxies()  # Load proxies
+
+# get Captcha token
 def get_token():
     while True:
         res = requests.get(f'http://localhost:5000/get').text
         if not 'None' in res:
             print(f'\r\r\033[0m>>\033[1;32m Captcha token get successful \033[0m')
             return res
-        else:
-            time.sleep(0.5)
+        else: time.sleep(0.5)
 
-# Clear terminal session & print logo
+# clear terminal session & print logo
 def clear_screen():
     if sys.platform.startswith('win'):
-        os.system('cls');print(logo)
+        os.system('cls'); print(logo)
     else:
-        os.system('clear');print(logo)
+        os.system('clear'); print(logo)
 
-# Get headers set / with `auth_token` or head only
+# get ip using proxy / not using for speed up
+def get_ip(proxy_url):
+    if proxy_url:
+        proxy = {'http': proxy_url, 'https': proxy_url}
+        try:
+            response = requests.get('http://ip-api.com/json', proxies=proxy)
+            return response.json()['query']
+        except:
+            return None
+    return None  # No proxy if not used
+
+# get headers set / with `auth_token` or head only
 def get_headers(auth_token=None):
     headers = {
         'accept': '*/*',
@@ -64,8 +72,8 @@ def get_headers(auth_token=None):
         headers['origin'] = 'chrome-extension://lgmpfmgeabnnlemejacfljbmonaomfmm'
     return headers
 
-# Registration account using proxy or not
-def reg_account(email, password, username, ref_code, proxy_url=None, captcha_token=None):
+# registration account | using proxy or not
+def reg_accaunt(email, password, username, ref_code, proxy_url=None, captcha_token=None):
     try:
         if proxy_url:
             print(f'\r\r\033[0m>>\033[1;32m Proxy : {proxy_url} \033[0m')
@@ -85,36 +93,85 @@ def reg_account(email, password, username, ref_code, proxy_url=None, captcha_tok
     except Exception as e:
         print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m'); linex(); time.sleep(1)
 
-# Main function for processing full action
+# login account and age authorization token
+def login_acccaunts(email, password, captcha_token, proxy_url):
+    try:
+        json_data = {
+            'user': email,
+            'password': password,
+            'remember_me': True,
+            'recaptcha_token': captcha_token
+        }
+        if proxy_url:
+            proxy_url = {'http': proxy_url, 'https': proxy_url}
+        headers = get_headers()
+        url = "https://api.nodepay.ai/api/auth/login"
+        response = requests.post(url, headers=headers, json=json_data, proxies=proxy_url, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m'); linex(); time.sleep(1)
+
+# active account and confirmation 
+def active_recent_accaunt(auth_token, proxy_url):
+    try:
+        json_data = {}
+        url = "https://api.nodepay.ai/api/auth/active-account"
+        headers = get_headers(auth_token)
+        if proxy_url:
+            proxy_url = {'http': proxy_url, 'https': proxy_url}
+        response = requests.post(url, headers=headers, json=json_data, proxies=proxy_url, timeout=5)
+        response.raise_for_status()
+        if not response.json()['msg'] == 'Success':
+            response = requests.post(url, headers=headers, json=json_data, proxies=proxy_url, timeout=5)
+        if not response.json()['msg'] == 'Success':
+            response = requests.post(url, headers=headers, json=json_data, proxies=proxy_url, timeout=5)
+        return response.json()
+    except Exception as e:
+        print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m'); linex(); time.sleep(1)
+
+# main def for possess full action
 def main():
     clear_screen()
     try:
-        ref_limit = int(input('\033[0m>>\033[1;32m Put Your Reff Amount: '))
+        reff_limit = int(input('\033[0m>>\033[1;32m Put Your Reff Amount: '))
     except:
-        print('\033[1;32m⚠️ Input Wrong Default Reff Amount is 1k '); ref_limit = 1000; time.sleep(1)
+        print('\033[1;32m⚠️ Input Wrong Default Reff Amaunt is 1k '); reff_limit = 1000; time.sleep(1)
     ref_code = input("\033[0m>>\033[1;32m Input referral code : ")
-    clear_screen(); success_crt = 0
-    for atm in range(ref_limit):
+    clear_screen()
+    success_crt = 0
+    for atm in range(reff_limit):
         try:
-            print(f'\r\r\033[0m>>\033[1;32m Processing  {str(success_crt)}/{str(ref_limit)} complete : {((atm+1) / ref_limit) * 100:.2f}% ')
+            print(f'\r\r\033[0m>>\033[1;32m Possessing  {str(success_crt)}/{str(reff_limit)} complete : {((atm+1) / reff_limit) * 100:.2f}% ')
             domains = ["@gmail.com", "@outlook.com", "@yahoo.com", "@hotmail.com"]
             characters = string.ascii_letters + string.digits
             username = str(''.join(random.choice(characters) for _ in range(12))).lower()
             password = str(''.join(random.choice(string.ascii_letters) for _ in range(6)) + 'Rc3@' + ''.join(random.choice(string.digits) for _ in range(3)))
             email = f"{username}{str(random.choice(domains))}"
-            proxy_url = generate_proxy()
+            proxy_url = random.choice(proxy_list) if proxy_list else None  # Use proxy if available
             captcha_token = get_token()
-            response_data = reg_account(email, password, username, ref_code, proxy_url, captcha_token)
+            response_data = reg_accaunt(email, password, username, ref_code, proxy_url, captcha_token)
             if response_data['msg'] == 'Success':
-                print(f'\r\r\033[0m>>\033[1;32m Account Created Successfully \033[0m')
-                success_crt += 1
-                open('accounts.txt', 'a').write(f"{str(email)}|{str(password)}\n")
+                print(f'\r\r\033[0m>>\033[1;32m Account Create Successful \033[0m')
+                captcha_token = get_token()
+                response_data = login_acccaunts(email, password, captcha_token, proxy_url)
+                if response_data['msg'] == 'Success':
+                    print(f'\r\r\033[0m>>\033[1;32m Account Login Successfuly \033[0m')
+                    auth_token = response_data['data']['token']
+                    response_data = active_recent_accaunt(auth_token, proxy_url)
+                    if response_data['msg'] == 'Success':
+                        print(f'\r\r\033[0m>>\033[1;32m Account Activated Successfully \033[0m')
+                        success_crt += 1
+                    else:
+                        print(f'\r\r\033[31m⚠️ Error: Account activation failed \033[0m')
+                else:
+                    print(f'\r\r\033[31m⚠️ Error: Login failed \033[0m')
             else:
-                print(f'\r\r\033[1;31m🌲 Account Creation Failed \033[0m {response_data["msg"]}')
-            linex()
+                print(f'\r\r\033[31m⚠️ Error: Account creation failed \033[0m')
         except Exception as e:
-            print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m'); linex(); time.sleep(1)
-    print('\r\r\033[0m>>\033[1;32m Your Referral Completed \033[0m')
-    exit()
+            print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m')
 
-main()
+    print(f'\r\r\033[0m>>\033[1;32m Script completed. Total accounts created: {success_crt} \033[0m')
+
+if __name__ == "__main__":
+    main()
